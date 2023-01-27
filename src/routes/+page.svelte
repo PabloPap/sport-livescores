@@ -1,2 +1,14 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<script lang="ts">
+	import type { PageData } from './$types';
+	export let data: PageData;
+</script>
+
+<h1>matches</h1>
+<ul>
+	{#each data.matchesFromMatchdays as match}
+		<li>
+			{`${match.homeTeam.name} - ${match.awayTeam.name}`}
+			{`${match.score.fullTime.home} - ${match.score.fullTime.away}`}
+		</li>
+	{/each}
+</ul>
