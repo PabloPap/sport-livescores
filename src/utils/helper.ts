@@ -32,7 +32,7 @@ export async function fetchData(apiCategory: ApiCategory, id?: number, options: 
 		const pairs = `${key}=${value}`;
 		url.includes('?') ? (url += `&${pairs}`) : (url += `?${pairs}`);
 	}
-	console.log(url);
+
 	return await fetch(url, {
 		headers: {
 			'X-Auth-Token': `${SECRET_API_KEY}`
@@ -52,4 +52,23 @@ export function matchdaysToFilter(currentMatchday: number, matchdaysAhead: numbe
 export function getMatchesByMatchdays(matches: Match[], currentMatchday: number): Match[] {
 	const matchdaysToCheck = matchdaysToFilter(currentMatchday, 2);
 	return matches.filter((match) => matchdaysToCheck.includes(match.matchday));
+}
+
+export function getMatchesInMatchday(matches: Match[], matchday: number): Match[] {
+	return matches.filter((match: Match) => match.matchday === matchday);
+}
+
+export function getSortedMatchesFromMatchdays(matchesFromMatchdays: Match[]) {
+	matchesFromMatchdays.slice().sort((a: Match, b: Match) => {
+		return new Date(b.utcDate).getTime() - new Date(a.utcDate).getTime();
+	});
+}
+
+export function getGroupOfMatchesByMatchdays(
+	matchesFromMatchdays: Match[],
+	currentMatchday: number
+) {
+	return Array.from({ length: currentMatchday + 1 }, (_, i) =>
+		matchesFromMatchdays.filter((match) => match.matchday === i)
+	);
 }

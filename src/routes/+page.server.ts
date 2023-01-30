@@ -1,6 +1,11 @@
 import type { PageServerLoad } from './$types';
 import type { ApiData } from '../types/types';
-import { getMatchesByMatchdays, getApiResponse, getIdByProperty } from '../utils/helper';
+import {
+	getMatchesByMatchdays,
+	getApiResponse,
+	getIdByProperty,
+	getGroupOfMatchesByMatchdays
+} from '$utils/helper';
 
 export const load = (async () => {
 	const areasParams: ApiData = {
@@ -27,5 +32,10 @@ export const load = (async () => {
 
 	const matchesFromMatchdays = getMatchesByMatchdays(matches, currentMatchday);
 
-	return { matchesFromMatchdays };
+	const groupOfMatchesByMatchday = getGroupOfMatchesByMatchdays(
+		matchesFromMatchdays,
+		currentMatchday
+	);
+
+	return { groupOfMatchesByMatchday };
 }) satisfies PageServerLoad;
