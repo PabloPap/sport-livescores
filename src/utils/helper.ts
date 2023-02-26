@@ -1,7 +1,7 @@
 import { SECRET_API_KEY } from '$env/static/private';
 import { PUBLIC_BASE_URL } from '$env/static/public';
 import type { Match } from '../types/types';
-import type { ApiResponse, ApiData, ApiCategory, ApiOptions } from '../types/types';
+import type { ApiData, ApiCategory, ApiOptions } from '../types/types';
 
 export function getIdByProperty<T extends { id: number; [prop: string]: any }>(
 	items: T[],
@@ -12,14 +12,33 @@ export function getIdByProperty<T extends { id: number; [prop: string]: any }>(
 	return item ? item.id : undefined;
 }
 
-export async function getApiResponse(params: ApiData) {
+export async function getApiResponseWrapper(params: ApiData) {
 	const { apiCategory, id, options } = params;
-	const data = await fetchData(apiCategory, id, options);
-	const dataRes: ApiResponse = await data.json();
-	return dataRes;
+	const requestConfig: RequestInit = {
+		headers: { 'X-Auth-Token': `${SECRET_API_KEY}` }
+	};
+	const response = await fetchData(apiCategory, id, options, requestConfig);
+	if (!response.ok) {
+		throw new Error(`Network error! Status: ${response.status}`);
+	}
+	return await response.json();
 }
 
-export async function fetchData(apiCategory: ApiCategory, id?: number, options: ApiOptions = {}) {
+export async function getApiResponse(params: ApiData) {
+	try {
+		const dataRes = await getApiResponseWrapper(params);
+		return dataRes;
+	} catch (error) {
+		console.error('Error:', error);
+	}
+}
+
+export async function fetchData(
+	apiCategory: ApiCategory,
+	id?: number,
+	options: ApiOptions = {},
+	config: RequestInit = {}
+) {
 	let url = `${PUBLIC_BASE_URL}`;
 
 	url += `${apiCategory.category1}/`;
@@ -33,11 +52,7 @@ export async function fetchData(apiCategory: ApiCategory, id?: number, options: 
 		url.includes('?') ? (url += `&${pairs}`) : (url += `?${pairs}`);
 	}
 
-	return await fetch(url, {
-		headers: {
-			'X-Auth-Token': `${SECRET_API_KEY}`
-		}
-	});
+	return await fetch(url, config);
 }
 
 export function matchdaysToFilter(currentMatchday: number, matchdaysAhead: number): number[] {

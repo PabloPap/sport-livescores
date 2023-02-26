@@ -12,14 +12,14 @@ export const load = (async () => {
 		apiCategory: { category1: 'areas' }
 	};
 	const areaData = await getApiResponse(areasParams);
-	const areaId = getIdByProperty(areaData.areas, 'Germany', 'name');
+	const areaId = getIdByProperty(areaData?.areas, 'Germany', 'name');
 
 	const competitionParams: ApiData = {
 		apiCategory: { category1: 'competitions' },
 		options: { areas: areaId }
 	};
 	const competitionData = await getApiResponse(competitionParams);
-	const competitionId = getIdByProperty(competitionData.competitions, 'Bundesliga', 'name');
+	const competitionId = getIdByProperty(competitionData?.competitions, 'Bundesliga', 'name');
 
 	const matchesParams: ApiData = {
 		apiCategory: { category1: 'competitions', category2: 'matches' },
@@ -27,7 +27,7 @@ export const load = (async () => {
 	};
 	const matchesData = await getApiResponse(matchesParams);
 
-	const matches = matchesData.matches;
+	const matches = matchesData?.matches;
 	const currentMatchday = matches[0].season.currentMatchday;
 
 	const matchesFromMatchdays = getMatchesByMatchdays(matches, currentMatchday);

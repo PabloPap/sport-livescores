@@ -95,9 +95,3 @@ export interface ApiData {
 	id?: number;
 	options?: ApiOptions;
 }
-
-export interface ApiResponse {
-	areas: Area[];
-	competitions: Competition[];
-	matches: Match[];
-}
