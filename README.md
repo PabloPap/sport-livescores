@@ -13,7 +13,7 @@ The data are retrieved from https://www.football-data.org/
 
 ## Developing
 
-Once you've created a project and installed dependencies with `npm install` start the development server:
+Install dependencies with `npm install` and start the development server:
 
 ```bash
 npm run dev
