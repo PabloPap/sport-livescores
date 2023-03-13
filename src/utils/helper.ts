@@ -87,3 +87,41 @@ export function getGroupOfMatchesByMatchdays(
 		matchesFromMatchdays.filter((match) => match.matchday === i)
 	);
 }
+
+export async function getGroupOfMatchesForArea() {
+	const areasParams: ApiData = {
+		apiCategory: { category1: 'areas' }
+	};
+	const areaData = await getApiResponse(areasParams);
+	const areaId = getIdByProperty(areaData?.areas, 'Germany', 'name');
+
+	if (areaId) {
+		const competitionParams: ApiData = {
+			apiCategory: { category1: 'competitions' },
+			options: { areas: areaId }
+		};
+		const competitionData = await getApiResponse(competitionParams);
+		const competitionId = getIdByProperty(competitionData?.competitions, 'Bundesliga', 'name');
+
+		if (competitionId) {
+			const matchesParams: ApiData = {
+				apiCategory: { category1: 'competitions', category2: 'matches' },
+				id: competitionId
+			};
+			const matchesData = await getApiResponse(matchesParams);
+
+			const matches = matchesData?.matches;
+			const currentMatchday = matches[0].season.currentMatchday;
+
+			const matchesFromMatchdays = getMatchesByMatchdays(matches, currentMatchday);
+
+			const groupOfMatchesByMatchday = getGroupOfMatchesByMatchdays(
+				matchesFromMatchdays,
+				currentMatchday
+			);
+			return { groupOfMatchesByMatchday };
+		}
+		throw new Error('could not retrive data for competition');
+	}
+	throw new Error('could not retrive data for area');
+}
